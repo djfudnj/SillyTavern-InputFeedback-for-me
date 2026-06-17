@@ -1,0 +1,148 @@
+<!-- You might want to add additional HTML elements to ST.
+    It's good practice to separate it out from your code -->
+<div class="input-feedback-extension-settings">
+  <div class="inline-drawer">
+    <div class="inline-drawer-toggle inline-drawer-header">
+      <b data-i18n="Input Feedback">Input Feedback</b>
+      <div
+        class="inline-drawer-icon fa-solid fa-circle-chevron-down down"
+      ></div>
+    </div>
+    <div class="inline-drawer-content">
+      <div class="input-feedback-extension_block flex-container">
+        <input id="input-feedback-enabled" type="checkbox" />
+        <label for="input-feedback-enabled" data-i18n="Enabled">Enabled</label>
+      </div>
+
+      <div class="input-feedback-extension_block flex-container">
+        <input id="input-feedback-auto-new" type="checkbox" />
+        <label
+          for="input-feedback-auto-new"
+          data-i18n="Auto feedback for new messages"
+          >Auto feedback for new messages</label
+        >
+      </div>
+
+      <div class="input-feedback-extension_block flex-container">
+        <input id="input-feedback-auto-edit" type="checkbox" />
+        <label
+          for="input-feedback-auto-edit"
+          data-i18n="Auto feedback for edited messages"
+          >Auto feedback for edited messages</label
+        >
+      </div>
+
+      <div class="input-feedback-extension_block flex-container">
+        <input id="input-feedback-folded" type="checkbox" />
+        <label for="input-feedback-folded" data-i18n="Fold feedback by default"
+          >Fold feedback by default</label
+        >
+      </div>
+
+      <div class="input-feedback-extension_block flex-container">
+        <div
+          class="justifyspacebetween alignitemscenter input-feedback-setting-title"
+        >
+          <span class="flex1" data-i18n="Template">Template</span>
+        </div>
+        <textarea
+          id="input-feedback-template"
+          class="text_pole textarea_compact"
+          rows="6"
+          data-i18n="[placeholder]The feedback request will be sent to AI in this format."
+          placeholder="The feedback request will be sent to AI in this format."
+        ></textarea>
+        <small data-i18n="input-feedback-template-tips"
+          >Make sure <code>{{previousMessages}}</code>,
+          <code>{{message}}</code> and <code>{{prompt}}</code> are in the
+          template.</small
+        >
+      </div>
+
+      <div class="input-feedback-extension_block flex-container">
+        <div
+          class="justifyspacebetween alignitemscenter input-feedback-setting-title"
+        >
+          <span class="flex1" data-i18n="Prompt">Prompt</span>
+        </div>
+        <textarea
+          id="input-feedback-prompt"
+          class="text_pole textarea_compact"
+          rows="6"
+          data-i18n="[placeholder]This prompt will be sent to AI to request for the input feedback."
+          placeholder="This prompt will be sent to AI to request for the input feedback."
+        ></textarea>
+      </div>
+
+      <div class="input-feedback-extension_block flex-container">
+        <label
+          for="input-feedback-num-prev-msgs"
+          class="title_restorable input-feedback-setting-title"
+        >
+          <span>
+            <span data-i18n="input-feedback-num-prev-msgs-1"
+              >Request input feedback along with</span
+            >
+            <span id="input-feedback-num-prev-msgs_value"></span
+            ><span data-i18n="input-feedback-num-prev-msgs-2">
+              previous messages.</span
+            >
+          </span>
+        </label>
+        <input
+          id="input-feedback-num-prev-msgs"
+          type="range"
+          min="0"
+          max="20"
+          step="1"
+        />
+      </div>
+
+      <br /> <!-- 줄바꿈 태그 추가 -->
+
+      <!-- ============== 추가된 설정 항목 시작 ============== -->
+      <div class="input-feedback-extension_block flex-container" style="margin-bottom: 0.5rem;">
+        <input id="input-feedback-use-connection-profile" type="checkbox" />
+        <label for="input-feedback-use-connection-profile" data-i18n="Use a separate connection profile (e.g. Vertex AI)">
+          Use a separate connection profile (e.g. Vertex AI)
+        </label>
+      </div>
+
+      <div id="input-feedback-connection-profile-block" class="input-feedback-extension_block flex-container flexFlowColumn">
+        <label for="input-feedback-connection-profile" data-i18n="Connection Profile">
+          Connection Profile
+        </label>
+        <select id="input-feedback-connection-profile" class="text_pole">
+          <!-- ConnectionManagerRequestService.handleDropdown 이 옵션을 자동으로 채워줍니다 -->
+        </select>
+      </div>
+
+      <div class="input-feedback-extension_block flex-container flexFlowColumn">
+        <label for="input-feedback-max-tokens" data-i18n="Max Tokens">
+          Max Tokens
+        </label>
+        <input
+          id="input-feedback-max-tokens"
+          class="text_pole"
+          type="number"
+          min="64"
+          max="8192"
+          step="1"
+        />
+      </div>
+      <!-- ============== 추가된 설정 항목 끝 ============== -->
+
+      <div
+        class="input-feedback-extension_block flex-container input-feedback-button-container"
+      >
+        <input
+          id="input-feedback-purge"
+          class="menu_button"
+          type="button"
+          data-i18n="[value]Purge all feedbacks"
+          value="Purge all feedbacks"
+        />
+      </div>
+    </div>
+  </div>
+</div>
