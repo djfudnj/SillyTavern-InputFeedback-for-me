@@ -1,14 +1,29 @@
 .input-feedback.inline-drawer {
   background: var(--greyCAIbg);
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   border-radius: 10px;
-  padding: 0 10px;
+  padding: 0 20px;
   border: 1px solid var(--SmartThemeBorderColor);
   transition: all 250ms;
+  line-height: 1.6; /* [추가] 전체적인 기본 줄 간격 설정 */
 }
 
+/* 헤더 제목 */
 .input-feedback.inline-drawer .inline-drawer-header {
   color: #fff/*var(--SmartThemeEmColor)*/;
+}
+
+/* [추가] 내부에 들어가는 모든 본문 텍스트 및 제목 색상  */
+.input-feedback.inline-drawer .inline-drawer-content,
+.input-feedback-setting-title,
+.input-feedback-button-container,
+.input-feedback-extension-settings {
+  color: #e0e0e0 !important;
+}
+
+/* [추가] 인풋 피드백 내부의 강조(strong) 및 기타 텍스트 */
+.input-feedback.inline-drawer * {
+  color: #e0e0e0;
 }
 
 .input-feedback-extension-settings .inline-drawer .inline-drawer-content {
@@ -18,4 +33,10 @@
 .input-feedback-setting-title,
 .input-feedback-button-container {
   padding-top: 0.5em;
+}
+
+/* [추가] 본문 내 문단이나 리스트 아이템 간의 간격 */
+.input-feedback.inline-drawer p,
+.input-feedback.inline-drawer li {
+  margin-bottom: 0.5em;
 }
