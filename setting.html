@@ -98,23 +98,33 @@
         />
       </div>
 
-      <br /> <!-- 줄바꿈 태그 추가 -->
+      <br />
 
-      <!-- ============== 추가된 설정 항목 시작 ============== -->
-      <div class="input-feedback-extension_block flex-container" style="margin-bottom: 0.5rem;">
-        <input id="input-feedback-use-connection-profile" type="checkbox" />
-        <label for="input-feedback-use-connection-profile" data-i18n="Use a separate connection profile (e.g. Vertex AI)">
-          Use a separate connection profile (e.g. Vertex AI)
+      <!-- ============== API 설정 ============== -->
+      <div class="input-feedback-extension_block flex-container flexFlowColumn">
+        <label for="input-feedback-provider" data-i18n="API Provider">
+          API Provider
         </label>
+        <select id="input-feedback-provider" class="text_pole">
+          <option value="main">Main API (현재 연결된 API 사용)</option>
+          <option value="vertexai">Google Vertex AI</option>
+          <option value="makersuite">Google AI Studio</option>
+          <option value="openai">OpenAI</option>
+          <option value="claude">Anthropic Claude</option>
+          <option value="openrouter">OpenRouter</option>
+        </select>
       </div>
 
-      <div id="input-feedback-connection-profile-block" class="input-feedback-extension_block flex-container flexFlowColumn">
-        <label for="input-feedback-connection-profile" data-i18n="Connection Profile">
-          Connection Profile
+      <div id="input-feedback-direct-settings" class="input-feedback-extension_block flex-container flexFlowColumn" style="display:none;">
+        <label for="input-feedback-model" data-i18n="Model">
+          Model
         </label>
-        <select id="input-feedback-connection-profile" class="text_pole">
-          <!-- ConnectionManagerRequestService.handleDropdown 이 옵션을 자동으로 채워줍니다 -->
-        </select>
+        <input
+          id="input-feedback-model"
+          class="text_pole"
+          type="text"
+          placeholder="예: gemini-2.5-flash"
+        />
       </div>
 
       <div class="input-feedback-extension_block flex-container flexFlowColumn">
@@ -124,13 +134,13 @@
         <input
           id="input-feedback-max-tokens"
           class="text_pole"
-          type="number"
-          min="64"
-          max="28192"
-          step="1"
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          placeholder="예: 8192 (권장: 20000 이상)"
         />
       </div>
-      <!-- ============== 추가된 설정 항목 끝 ============== -->
+      <!-- ============== API 설정 끝 ============== -->
 
       <div
         class="input-feedback-extension_block flex-container input-feedback-button-container"

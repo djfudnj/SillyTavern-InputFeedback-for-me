@@ -10,12 +10,14 @@ import {
   eventSource,
   event_types,
   generateRaw,
+  getRequestHeaders,
   messageFormatting,
   getCurrentChatId,
 } from "../../../../script.js";
 
 import { applyLocale } from "../../../../scripts/i18n.js";
-import { ConnectionManagerRequestService } from "../../shared.js";
+import { oai_settings } from "../../../openai.js";
+import { SECRET_KEYS, secret_state } from "../../../secrets.js";
 
 // Keep track of where your extension is located, name should match repo name
 const extensionName = "SillyTavern-InputFeedback";
@@ -26,9 +28,9 @@ const defaultSettings = {
   autoNew: false,
   autoEdit: false,
   folded: false,
-  useConnectionProfile: false,
-  connectionProfile: "",
-  maxTokens: 1024,
+  provider: "main",
+  model: "gemini-2.5-flash",
+  maxTokens: 8192,
   template: `Previous Messages:
 {{previousMessages}}
 
@@ -98,28 +100,12 @@ async function loadSettings() {
   $("#input-feedback-num-prev-msgs")
     .val(extension_settings[extensionName].numPrevMsgs)
     .trigger("input");
-  $("#input-feedback-use-connection-profile")
-    .prop("checked", extension_settings[extensionName].useConnectionProfile)
-    .trigger("input");
+  const savedProvider = extension_settings[extensionName].provider || "main";
+  $("#input-feedback-provider").val(savedProvider);
+  updateModelInput(savedProvider);
   $("#input-feedback-max-tokens")
     .val(extension_settings[extensionName].maxTokens)
     .trigger("input");
-
-  // Set up the connection profile dropdown (provided by the Connection Manager extension)
-  try {
-    ConnectionManagerRequestService.handleDropdown(
-      "#input-feedback-connection-profile",
-      extension_settings[extensionName].connectionProfile,
-      (profile) => {
-        extension_settings[extensionName].connectionProfile = profile?.id ?? "";
-        saveSettingsDebounced();
-      },
-    );
-  } catch (error) {
-    // Connection Manager extension might be disabled
-    console.warn("[InputFeedback] Connection Manager is not available:", error);
-    $("#input-feedback-connection-profile-block").hide();
-  }
 }
 
 function getMessage(messageId) {
@@ -137,14 +123,97 @@ function getPreviousMessages(messageId, numPrevMsgs) {
   return previousMessages.join("\n\n");
 }
 
+// provider별 oai_settings 모델 필드 이름
+const PROVIDER_MODEL_FIELD = {
+  vertexai:   "vertexai_model",
+  makersuite: "google_model",
+  openai:     "openai_model",
+  claude:     "claude_model",
+  openrouter: "openrouter_model",
+};
+
+// provider별 chat_completion_source 값
+const PROVIDER_SOURCE = {
+  vertexai:   "vertexai",
+  makersuite: "makersuite",
+  openai:     "openai",
+  claude:     "claude",
+  openrouter: "openrouter",
+};
+
+// provider 변경 시 모델 입력창 업데이트
+function updateModelInput(provider) {
+  if (provider === "main") {
+    $("#input-feedback-direct-settings").hide();
+    return;
+  }
+  $("#input-feedback-direct-settings").show();
+
+  // 저장된 모델이 없으면 oai_settings의 현재 모델을 기본값으로
+  if (!extensionSettings.model) {
+    const field = PROVIDER_MODEL_FIELD[provider];
+    const defaultModel = (field && oai_settings[field]) ? oai_settings[field] : "";
+    if (defaultModel) {
+      $("#input-feedback-model").val(defaultModel);
+      extension_settings[extensionName].model = defaultModel;
+      saveSettingsDebounced();
+    }
+  }
+}
+
+async function callDirectApi(prompt) {
+  const { provider, model, maxTokens } = extensionSettings;
+
+  // "main" provider: 메인 API 설정 그대로 사용
+  if (provider === "main") {
+    return await generateRaw(prompt, null, false, true);
+  }
+
+  // 직접 호출 방식
+  const source = PROVIDER_SOURCE[provider] || provider;
+
+  const requestBody = {
+    chat_completion_source: source,
+    messages: [{ role: "user", content: prompt }],
+    model: model,
+    max_tokens: Number(maxTokens) || 8192,
+    stream: false,
+  };
+
+  // Vertex AI 전용 파라미터
+  if (source === "vertexai") {
+    requestBody.vertexai_auth_mode = oai_settings.vertexai_auth_mode;
+    requestBody.vertexai_region = oai_settings.vertexai_region;
+    requestBody.vertexai_express_project_id = oai_settings.vertexai_express_project_id;
+  }
+
+  const response = await fetch("/api/backends/chat-completions/generate", {
+    method: "POST",
+    headers: getRequestHeaders(),
+    body: JSON.stringify(requestBody),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`API request failed (${response.status}): ${errorText}`);
+  }
+
+  const data = await response.json();
+
+  // 응답에서 텍스트 추출
+  return (
+    data?.choices?.[0]?.message?.content ??
+    data?.candidates?.[0]?.content?.parts?.[0]?.text ??
+    data?.text ??
+    ""
+  );
+}
+
 async function getFeedback(messageId) {
   const {
     numPrevMsgs,
     prompt: feedbackPrompt,
     template,
-    useConnectionProfile,
-    connectionProfile,
-    maxTokens,
   } = extensionSettings;
   const message = getMessage(messageId);
 
@@ -163,26 +232,7 @@ async function getFeedback(messageId) {
 
   let feedback;
   try {
-    if (useConnectionProfile && connectionProfile) {
-      const result = await ConnectionManagerRequestService.sendRequest(
-        connectionProfile,
-        prompt,
-        Number(maxTokens) || 1024,
-        {},
-        {
-          vertex_ai_safety_settings: [
-            { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_CIVIC_INTEGRITY',   threshold: 'BLOCK_NONE' },
-          ],
-        },
-      );
-      feedback = result?.content ?? "";
-    } else {
-      feedback = await generateRaw(prompt, null, false, true);
-    }
+    feedback = await callDirectApi(prompt);
   } catch (error) {
     console.error("[InputFeedback] Failed to get feedback:", error);
     toastr.error(
@@ -323,10 +373,19 @@ function onNumPrevMsgsInput() {
   saveSettingsDebounced();
 }
 
-function onUseConnectionProfileInput(event) {
-  const value = Boolean($(event.target).prop("checked"));
-  extension_settings[extensionName].useConnectionProfile = value;
+function onProviderInput() {
+  const value = $(this).val();
+  extension_settings[extensionName].provider = value;
   saveSettingsDebounced();
+  updateModelInput(value);
+}
+
+function onModelInput() {
+  const value = $(this).val();
+  if (value) {
+    extension_settings[extensionName].model = value;
+    saveSettingsDebounced();
+  }
 }
 
 function onMaxTokensInput() {
@@ -451,7 +510,8 @@ jQuery(async () => {
   $("#input-feedback-template").on("input", onTemplateInput);
   $("#input-feedback-prompt").on("input", onPromptInput);
   $("#input-feedback-num-prev-msgs").on("input", onNumPrevMsgsInput);
-  $("#input-feedback-use-connection-profile").on("input", onUseConnectionProfileInput);
+  $("#input-feedback-provider").on("input", onProviderInput);
+  $("#input-feedback-model").on("input", onModelInput);
   $("#input-feedback-max-tokens").on("input", onMaxTokensInput);
   $("#input-feedback-purge").on("click", onPurgeClick);
 
