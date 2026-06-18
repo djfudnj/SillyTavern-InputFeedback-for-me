@@ -107,14 +107,15 @@
         </label>
         <select id="input-feedback-provider" class="text_pole">
           <option value="main">Main API (현재 연결된 API 사용)</option>
-          <option value="vertexai">Google Vertex AI (직접 연결)</option>
+          <option value="vertexai">Google Vertex AI</option>
           <option value="makersuite">Google AI Studio</option>
           <option value="openai">OpenAI</option>
           <option value="claude">Anthropic Claude</option>
+          <option value="openrouter">OpenRouter</option>
         </select>
       </div>
 
-      <div id="input-feedback-direct-settings" class="input-feedback-extension_block flex-container flexFlowColumn">
+      <div id="input-feedback-direct-settings" class="input-feedback-extension_block flex-container flexFlowColumn" style="display:none;">
         <label for="input-feedback-model" data-i18n="Model">
           Model
         </label>
@@ -124,7 +125,6 @@
           type="text"
           placeholder="예: gemini-2.5-flash"
         />
-        <small>Vertex AI: gemini-2.5-pro / gemini-2.5-flash 등</small>
       </div>
 
       <div class="input-feedback-extension_block flex-container flexFlowColumn">
@@ -134,10 +134,10 @@
         <input
           id="input-feedback-max-tokens"
           class="text_pole"
-          type="number"
-          min="64"
-          max="65536"
-          step="1"
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          placeholder="예: 8192 (권장: 20000 이상)"
         />
       </div>
       <!-- ============== API 설정 끝 ============== -->
