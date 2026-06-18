@@ -8,7 +8,7 @@
 }
 
 .input-feedback.inline-drawer .inline-drawer-header {
-  color: var(--SmartThemeEmColor);
+  color: #fff/*var(--SmartThemeEmColor)*/;
 }
 
 .input-feedback-extension-settings .inline-drawer .inline-drawer-content {
