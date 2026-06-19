@@ -1,3 +1,6 @@
+# WIP WIP WIP WIP !!!!
+This is a work in progress, and the original copyright belongs to the original author, not me
+
 # SillyTavern Extension: Input feedback
 
 This extension provides AI-generated feedback on your input. It sends your current message along with some previous messages as context to the AI, which returns (hopefully) insightful feedback. The feedback is then displayed in a foldable panel below your message. As it does not become part of the chat context, the characters remain unaware of it. Particularly useful for language learning.
