@@ -29,4 +29,6 @@ AGPL-3.0
 
 ## 수정된 부분
 
-![Screenshot-20260620-222851-Chrome.jpg](https://i.postimg.cc/fLtbXGJy/Screenshot-20260620-222851-Chrome.jpg)
+![Screenshot-20260620-222851-Chrome.jpg|500](https://i.postimg.cc/fLtbXGJy/Screenshot-20260620-222851-Chrome.jpg)
+
+Apart from the currently connected main API provider and model, you can choose and connect a secondary model from your saved APIs. Don't forget to enter the exact model and token settings. (Note: Google Vertex AI Full Version connected via JSON key is also supported as a secondary model.)
