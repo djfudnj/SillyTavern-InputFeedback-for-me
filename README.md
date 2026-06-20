@@ -29,4 +29,4 @@ AGPL-3.0
 
 ## 수정된 부분
 
-
+![Screenshot-20260620-222851-Chrome.jpg](https://i.postimg.cc/fLtbXGJy/Screenshot-20260620-222851-Chrome.jpg)
