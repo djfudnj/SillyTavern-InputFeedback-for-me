@@ -2,14 +2,9 @@
   background: var(--greyCAIbg);
   margin-bottom: 10px;
   border-radius: 10px;
-  padding: 0 20px;
+  padding: 0px 20px;
   border: 1px solid var(--SmartThemeBorderColor);
   transition: all 250ms;
-  line-height: 1.6; /* [추가] 전체적인 기본 줄 간격 설정 */
-}
-
-/* [추가] 인풋 피드백 내부의 강조(strong) 및 기타 텍스트 */
-.input-feedback.inline-drawer * {
   color: #e0e0e0;
 }
 
@@ -17,13 +12,27 @@
   padding-bottom: 1em;
 }
 
+.input-feedback .inline-drawer-content {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+
 .input-feedback-setting-title,
 .input-feedback-button-container {
   padding-top: 0.5em;
 }
 
-/* [추가] 본문 내 문단이나 리스트 아이템 간의 간격 */
+/* 기본 PC 스타일 */
 .input-feedback.inline-drawer p,
 .input-feedback.inline-drawer li {
   margin-bottom: 0.5em;
+ line-height: 1.6; /* [추가] 전체적인 기본 줄 간격 설정 */
+}
+
+/* 모바일 전용 스타일 (768px 이하) */
+@media (max-width: 768px) {
+  .input-feedback.inline-drawer p,
+  .input-feedback.inline-drawer li {
+    line-height: 1.4;      /* 글자 줄 간격 조정 (기본값보다 조밀하게 설정) */
+  }
 }
